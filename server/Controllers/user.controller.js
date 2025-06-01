@@ -3,6 +3,7 @@ import Utils from '../Utils/utils.js'
 import bcrypt from 'bcrypt'
 import User from '../Models/user.js'
 import jwt from 'jsonwebtoken'
+import logger from '../Utils/logger.js'
 
 const createUserRequest = Joi.object({
     username: Joi.string().alphanum().min(3).max(30).required(),
@@ -24,6 +25,7 @@ async function createUser(req, res) {
         if (err.code === 11000) {
             return Utils.errorResponse(res, 409, 'Username already exists')
         }
+        logger.error('Error creating user:', err)
         return Utils.errorResponse(res, 500, 'Internal Server Error')
     }
     return Utils.successResponse(res, 201, 'User created successfully', value)
@@ -50,6 +52,7 @@ async function loginUser(req, res) {
         const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' })
         return Utils.successResponse(res, 200, 'Login successful', { token })
     } catch (err) {
+        logger.error('Error creating user:', err)
         return Utils.errorResponse(res, 500, 'Internal Server Error')
     } 
 }

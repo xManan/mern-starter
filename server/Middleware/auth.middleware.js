@@ -1,5 +1,6 @@
 import utils from "../Utils/utils.js"
 import jwt from 'jsonwebtoken'
+import logger from '../Utils/logger.js'
 
 function authMiddleware(req, res, next) {
     let token = req.header('Authorization')
@@ -12,7 +13,7 @@ function authMiddleware(req, res, next) {
         req.userId = decoded.userId
         next()
     } catch (err) {
-        console.error('Token verification failed:', err)
+        logger.error(err, 'Authentication error')
         return utils.errorResponse(res, 400, 'Invalid token.')
     }
 }
